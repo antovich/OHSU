@@ -566,7 +566,6 @@ ggplot(complete(VisImp, 1), aes(x = Y1_CD_TMCQmdgrpR, y = ARSHYP, alpha = Y1_CD_
   stat_summary(fun.data=mean_sdl, fun.args = list(mult=1), 
                geom="pointrange", color="red")
 
-
 #Plotting distribution as a ridgeline plot
 #Ridgeline plot: Partially overlapping density plots to show change across distributions
 library(ggridges)
