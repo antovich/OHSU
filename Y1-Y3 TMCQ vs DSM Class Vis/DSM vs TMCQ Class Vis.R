@@ -1,6 +1,7 @@
 #Visualizations to display categorical data
 #Specifically, contingency across different classification systems (DSM-V vs TMCQ temperament) 
 #and within classification system across time (Y1-Y3)
+#Saved to github
 
 #Load packages
 library(tidyverse)
@@ -426,6 +427,39 @@ ggplot(filter(NewDiag2Class3, Type != "EverIrrit"), aes(x = Label, y = value, fi
 
 ###############################################################################################################
 
+## SUNBURSTPLOT FOR NEW DIAGNOSIS
+###############################################################################################################
+
+#Data collected from cross-tabs file sent by Sarah
+NewDiagAny <- read.csv('H:/Projects/Y1-Y3 TMCQ vs DSM Class Vis/Data/ProportionNewDiag.csv', 
+                    na.strings = c("NA", -999, ""), fileEncoding="UTF-8-BOM") %>%
+  mutate(PropAny = CountNewDx/(CountNewDx + CountNoNewDx))%>%
+  dplyr::select(Type, Class, CountNewDx, CountNoNewDx, PropAny)%>%
+  
+
+ggplot(filter(NewDiagAny, Type == "TMCQ")) +
+  geom_bar(aes(fill=Class, x=0.5, y=filter(NewDiagAny,variable == "CountNewDx"| variable == "CountNoNewDx")), alpha = 0.8, width=0.5, stat='identity') +
+  scale_fill_manual(limits = c('Mild',  'Irritable','Surgent'),
+                    #Only give breaks and labels to the elements that should appear in the legend
+                    breaks = c('Mild','Irritable','Surgent'),
+                    labels = c('Mild','Irritable','Surgent'),
+                    values = c(pal[1:3]), name = "Temperament Class")+
+  new_scale_fill() +
+  geom_bar(aes(fill=DSM2, x=1), alpha = 0.8, width=0.5, stat='identity') +
+  #"Limits" designate which levels will be used, "breaks" designate the levels that appear on the legend,  "labels" labels them, and "values" provide colors
+  scale_fill_manual(limits = c('Irrit_Comb','Irrit_Hyp','Irrit_Int',
+                               'Mild_Int','Mild_Hyp', 'Mild_Comb',
+                               'Surg_Int','Surg_Hyp', 'Surg_Comb'),
+                    #Only give breaks and labels to the elements that should appear in the legend
+                    breaks = c('Surg_Comb','Surg_Hyp','Surg_Int'),
+                    labels = c('Combined','Hyperactive', 'Inattentive'),
+                    values = c(pal2,pal2[3],pal2[2],pal2[1],pal2[3],pal2[2],pal2[1]), name = "DSM-V Class")+
+  coord_polar(theta='y')+ #polar coordinates stretch the y-axis into a circle (e.g., bottom of y axis at center, top of y axis at edge
+  theme_minimal()+
+  theme(axis.text = element_blank(), panel.grid = element_blank())+
+  labs(x = NULL, y = NULL)
+###############################################################################################################
+
 ## Using MI to get more data
 ###############################################################################################################
 
@@ -532,6 +566,7 @@ ggplot(complete(VisImp, 1), aes(x = Y1_CD_TMCQmdgrpR, y = ARSHYP, alpha = Y1_CD_
   ggtitle("Imputed Dataset")+
   stat_summary(fun.data=mean_sdl, fun.args = list(mult=1), 
                geom="pointrange", color="red")
+
 
 #Plotting distribution as a ridgeline plot
 #Ridgeline plot: Partially overlapping density plots to show change across distributions
